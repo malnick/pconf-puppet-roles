@@ -47,15 +47,27 @@ haproxy:
       bind: '*:80'
       mode: http
       reqadd: 'X-Forwarded-Proto:\ http'
+      default_backend: streaker
       acl:
         - 'micropig_url path_beg -i /micropig'
         - 'microscope_url path_beg -i /microscope'
         - 'microbrew_url path_beg -i /microbrew'
+        - 'streaker_url path_beg -i /streaker'
       use_backend:
         - 'micropig if micropig_url'
         - 'microscope if microscope_url'
         - 'microbrew if microbrew_url'
+        - 'streaker if streaker_url'
   backends:
+    streaker:
+      balance: leastconn
+      option:
+        - forwardfor
+        - httpclose
+        - 'httpchk GET / HTTP/1.0'
+      server:
+        app_name: streaker-service
+        options: check
     micropig:
       balance: leastconn
       option:
