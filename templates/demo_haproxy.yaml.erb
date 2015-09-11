@@ -1,0 +1,87 @@
+---
+# Where is your Marathon?
+marathon: http://<%= @ipaddress_eth0 %>:8080
+# Main HaProxy block
+haproxy:
+  global:
+    daemon:
+    log:
+      - '127.0.0.1 local0'
+      - '127.0.0.1 local1 notice'
+    maxconn: 4096
+  defaults:
+    log: global
+    mode: http
+    retries: 3
+    maxconn: 2000
+# Any HaProxy param that it utilized more than once can be passed a hash of op  tions
+    timeout:
+      connect: '5s'
+      client: '50s'
+      server: '50s'
+      http-keep-alive: 1s
+      http-request: 15s
+      queue: 30s
+      tarpit: 60s
+# Or an array of options
+    option:
+      - httplog
+      - dontlognull
+      - forwardfor
+      - http-server-close
+      - redispatch
+# Listen block
+  listens:
+    stats:
+      bind: '0.0.0.0:22002'
+      mode: http
+      stats:
+        - enable
+        - hide-version
+        - 'uri /'
+        - 'auth admin:admin'
+        - 'realm Haproxy\ Statistics'
+# Frontend blocks
+  frontends:
+    http-in:
+      bind: '*:80'
+      mode: http
+      reqadd: 'X-Forwarded-Proto:\ http'
+      acl:
+        - 'micropig_url path_beg -i /micropig'
+        - 'microscope_url path_beg -i /microscope'
+        - 'microbrew_url path_beg -i /microbrew'
+      use_backend:
+        - 'micropig if micropig_url'
+        - 'microscope if microscope_url'
+        - 'microbrew if microbrew_url'
+  backends:
+    micropig:
+      balance: leastconn
+      option:
+        - forwardfor
+        - httpclose
+        - 'httpchk GET / HTTP/1.0'
+      server:
+        app_name: micropig-service
+        options: check
+    microscope:
+      balance: leastconn
+      option:
+        - forwardfor
+        - httpclose
+        - 'httpchk GET / HTTP/1.0'
+      server:
+        app_name: microscope-service
+        options: check
+        management_port: false
+    microbrew:
+      balance: leastconn
+      option:
+        - forwardfor
+        - httpclose
+        - 'httpchk GET / HTTP/1.0'
+      server:
+        app_name: microbrew-service
+        options: check
+        management_port: false
