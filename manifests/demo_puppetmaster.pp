@@ -1,3 +1,3 @@
-class demo_puppetmaster {
+class roles::demo_puppetmaster {
   include ::puppetmaster
 }
