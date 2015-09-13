@@ -73,7 +73,7 @@ haproxy:
       option:
         - forwardfor
         - httpclose
-        - 'httpchk GET / HTTP/1.0'
+        - 'httpchk GET /query HTTP/1.0'
       server:
         app_name: micropig-service
         options: check
@@ -82,7 +82,7 @@ haproxy:
       option:
         - forwardfor
         - httpclose
-        - 'httpchk GET / HTTP/1.0'
+        - 'httpchk GET /query HTTP/1.0'
       server:
         app_name: microscope-service
         options: check
@@ -92,7 +92,7 @@ haproxy:
       option:
         - forwardfor
         - httpclose
-        - 'httpchk GET / HTTP/1.0'
+        - 'httpchk GET /query HTTP/1.0'
       server:
         app_name: microbrew-service
         options: check
