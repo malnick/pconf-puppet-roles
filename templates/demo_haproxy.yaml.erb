@@ -33,13 +33,12 @@ haproxy:
 # Listen block
   listens:
     stats:
-      bind: '0.0.0.0:22002'
+      bind: '0.0.0.0:8880'
       mode: http
       stats:
         - enable
         - hide-version
         - 'uri /'
-        - 'auth admin:admin'
         - 'realm Haproxy\ Statistics'
 # Frontend blocks
   frontends:
